@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTodoListDto } from './dtos/create-todo_list';
 import { UpdateTodoListDto } from './dtos/update-todo_list';
-import { TodoList } from '../interfaces/todo_list.interface';
+import {
+  CompleteableToDoItem,
+  TodoList,
+} from '../interfaces/todo_list.interface';
 
 @Injectable()
 export class TodoListsService {
@@ -20,9 +23,10 @@ export class TodoListsService {
   }
 
   create(dto: CreateTodoListDto): TodoList {
-    const todoList: TodoList = {
+    const todoList: CompleteableToDoItem = {
       id: this.nextId(),
       name: dto.name,
+      isCompleted: false,
     };
 
     this.todolists.push(todoList);
@@ -45,6 +49,14 @@ export class TodoListsService {
     if (index > -1) {
       this.todolists.splice(index, 1);
     }
+  }
+
+  setItemAsCompleted(id: number, isCompleted: boolean): TodoList {
+    const item = this.todolists.find((x) => x.id == Number(id));
+
+    (item as CompleteableToDoItem).isCompleted = isCompleted;
+
+    return item;
   }
 
   private nextId(): number {
